@@ -1,6 +1,10 @@
 import { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Report from './Report';
 
 const FileUpload = () => {
+  const navigate = useNavigate();
+
   const [selectedFile, setSelectedFile] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState(null);
@@ -81,10 +85,11 @@ const FileUpload = () => {
     
     // Mock successful upload
     alert(`File "${selectedFile.name}" uploaded successfully!`);
+    navigate('/report');
     setSelectedFile(null);
     setError(null);
   };
-
+  
   const openFileSelector = () => {
     fileInputRef.current.click();
   };
@@ -105,7 +110,6 @@ const FileUpload = () => {
       <div className="card bg-gray-900 shadow-2xl w-full max-w-md border border-gray-700">
         <div className="card-body">
           <h2 className="card-title text-center text-white">Upload Document</h2>
-          
           {/* Hidden file input with accepted file types */}
           <input
             type="file"
