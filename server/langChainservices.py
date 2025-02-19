@@ -68,7 +68,7 @@ def format_extracted_data(extracted_data):
     return json.dumps(extracted_data, indent=4, ensure_ascii=False)
 
 def extractRelevantDataWithStandardUnits(text: str):
-    # Modify the prompt to include instructions for standardizing units to HL7 format
+    # Modify the prompt to ensure the output is strictly in JSON format with arrays and includes the "summary" key
     prompt_template = PromptTemplate.from_template("""
 You are a specialized medical information extractor. Given the input text below, your task is to:
 1. **Extract Relevant Data**:
@@ -90,22 +90,22 @@ You are a specialized medical information extractor. Given the input text below,
    - Provide a brief, medically relevant summary highlighting any abnormal findings, trends, or concerns.
    - If possible, suggest potential implications based on observed deviations (e.g., high glucose may indicate diabetes risk).
 
-4. **Output Format**:
-   - Return structured data in JSON format with the following keys:
+4. **Strict JSON Format Output**:
+   - Return the extracted data strictly in JSON format with an array of objects, each containing the following keys:
      - **"test_name"**: Standardized medical test name.
      - **"value"**: Numeric value of the test.
      - **"unit"**: Standardized HL7 unit.
      - **"reference_range"**: Normal reference range for the test.
      - **"status"**: Categorization as **"Low"**, **"Normal"**, or **"High"** based on the value.
-   - Additionally, include a **"summary"** field at the end that provides an overall interpretation of the results.
+   - Include a **"summary"** key with a brief interpretation of the overall results.
+   - The output should be an array of JSON objects with each test result and a "summary" key at the end, containing the overall interpretation.
 
 ### Input Text:
 {input_text}
 
 ### Expected Output:
-Provide the extracted data in a valid JSON format along with a medically relevant summary. Do not include any other commentary or explanation.
+Provide the extracted data as a valid JSON array of objects, each containing the keys above. Ensure that the final output is a single JSON array with a summary key at the end.
 """)
-
 
     prompt = prompt_template.invoke({"input_text": text})
     return llm.invoke(prompt).content
@@ -119,12 +119,12 @@ def print_extracted_data(extracted_data):
         print(f"{test_name}: {value} {unit}")
 
 # 🔹 Provide your PDF file path here
-pdf_path = "report3.pdf"
+
 
 # 🔹 Extract and process the blood test report
-text = extract_text_from_pdf(pdf_path)
+
 
 
 # 🔹 Print the extracted results
-print((extractRelevantDataWithStandardUnits(text)))
+
 
